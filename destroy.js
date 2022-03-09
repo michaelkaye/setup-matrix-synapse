@@ -20,14 +20,14 @@ async function run() {
       const artifactClient = artifact.create();
       const cwd = process.cwd();
       const files = [
-        `{cwd}/synapse/homeserver.yaml`,
-        `{cwd}/synapse/homeserver.log`,
-        `{cwd}/synapse/additional.yaml`,
-        `{cwd}/synapse/out.log`,
-        `{cwd}/synapse/err.log`
+        `${cwd}/synapse/homeserver.yaml`,
+        `${cwd}/synapse/homeserver.log`,
+        `${cwd}/synapse/additional.yaml`,
+        `${cwd}/synapse/out.log`,
+        `${cwd}/synapse/err.log`
       ];
         
-      const rootDirectory = `{cwd}/synapse`;
+      const rootDirectory = `${cwd}/synapse`;
       const options = {
         continueOnError: true
       }
