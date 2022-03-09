@@ -2995,6 +2995,8 @@ async function run() {
 
     core.info(`Starting synapse ...`);
     // avoid exec.exec as we want to run in background
+    exec.exec("touch", ["synapse/out.log"]);
+    exec.exec("touch", ["synapse/err.log"]);
     const out = fs.openSync('synapse/out.log', 'a');
     const err = fs.openSync('synapse/err.log', 'a');
     const options = {
