@@ -11,7 +11,7 @@ async function run() {
     
     // Lots of stuff here, from the setting up synapse page.
     await exec.exec("mkdir", ["-p", "synapse"]);
-    await exec.exec("virtualenv", ["-p", "python3", "synapse/env"]);
+    await exec.exec("python3" ["-m", "venv", "-p", "python3", "synapse/env"]);
     await exec.exec("ls", ["-R"]);
     await exec.exec("synapse/env/bin/pip", ["install", "--upgrade", "pip"]);
     await exec.exec("synapse/env/bin/pip", ["install", "--upgrade", "setuptools"]);
