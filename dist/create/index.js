@@ -2979,15 +2979,16 @@ async function run() {
     core.info(`Installing synapse...`);
     
     // Lots of stuff here, from the setting up synapse page.
-    exec.exec("mkdir", ["-p", "synapse"]);
-    exec.exec("virtualenv", ["-p", "python3", "synapse/env"]);
-    exec.exec("synapse/env/bin/pip", ["install", "--upgrade", "pip"]);
-    exec.exec("synapse/env/bin/pip", ["install", "--upgrade", "setuptools"]);
-    exec.exec("synapse/env/bin/pip", ["install", "matrix-synapse"]);
+    await exec.exec("mkdir", ["-p", "synapse"]);
+    await exec.exec("virtualenv", ["-p", "python3", "synapse/env"]);
+    await exec.exec("ls", ["-R"]);
+    await exec.exec("synapse/env/bin/pip", ["install", "--upgrade", "pip"]);
+    await exec.exec("synapse/env/bin/pip", ["install", "--upgrade", "setuptools"]);
+    await exec.exec("synapse/env/bin/pip", ["install", "matrix-synapse"]);
     
     core.info("Generating config...");
 
-    exec.exec("synapse/env/bin/python3", ["-m", "synapse.app.homeserver", "--server-name", "localhost", "--config-path", "synapse/homeserver.yaml", "--generate-config", "--report-stats=no"]);
+    await exec.exec("synapse/env/bin/python3", ["-m", "synapse.app.homeserver", "--server-name", "localhost", "--config-path", "synapse/homeserver.yaml", "--generate-config", "--report-stats=no"]);
     // TODO customize synapse
     // Add listeners
     // Disable ratelimiting
@@ -2995,8 +2996,8 @@ async function run() {
 
     core.info(`Starting synapse ...`);
     // avoid exec.exec as we want to run in background
-    exec.exec("touch", ["synapse/out.log"]);
-    exec.exec("touch", ["synapse/err.log"]);
+    await exec.exec("touch", ["synapse/out.log"]);
+    await exec.exec("touch", ["synapse/err.log"]);
     const out = fs.openSync('synapse/out.log', 'a');
     const err = fs.openSync('synapse/err.log', 'a');
     const options = {
