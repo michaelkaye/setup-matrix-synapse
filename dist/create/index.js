@@ -3018,7 +3018,7 @@ async function run() {
        enable_registration: true,
        listeners: [
          {
-           port: port,
+           port: int(port),
            tls: false,
            bind_addresses: ['0.0.0.0'],
            type: 'http',
@@ -3088,7 +3088,7 @@ async function run() {
        };
        additional = { ...additional, ...rateLimiting };
     }
-    await fs.writeFile("additional.yaml", JSON.stringify(additional), 'utf8', (err) => { if (err != null) { core.info(err) }});
+    await fs.writeFile("additional.yaml", JSON.stringify(additional, null, 2), 'utf8', (err) => { if (err != null) { core.info(err) }});
 
     // And finally, customConfig is the user-supplied custom config, if required
 
