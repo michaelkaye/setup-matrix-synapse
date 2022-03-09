@@ -9466,14 +9466,14 @@ async function run() {
       const artifactName = core.getInput('artifactName');
       const artifactClient = artifact.create();
       const files = [
-        `${cwd}/synapse/homeserver.yaml`,
-        `${cwd}/synapse/homeserver.log`,
-        `${cwd}/synapse/additional.yaml`,
-        `${cwd}/synapse/out.log`,
-        `${cwd}/synapse/err.log`
+        `${cwd}/homeserver.yaml`,
+        `${cwd}/homeserver.log`,
+        `${cwd}/additional.yaml`,
+        `${cwd}/out.log`,
+        `${cwd}/err.log`
       ];
         
-      const rootDirectory = `${cwd}/synapse`;
+      const rootDirectory = `${cwd}`;
       const options = {
         continueOnError: true
       }
