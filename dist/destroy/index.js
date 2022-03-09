@@ -9466,18 +9466,18 @@ async function run() {
       const artifactClient = artifact.create();
       const cwd = process.cwd();
       const files = [
-        `${cwd}/synapse/homeserver.yaml`,
-        `${cwd}/synapse/homeserver.log`,
-        `${cwd}/synapse/additional.yaml`,
-        `${cwd}/synapse/out.log`,
-        `${cwd}/synapse/err.log`
+        __nccwpck_require__.ab + "homeserver.yaml",
+        __nccwpck_require__.ab + "homeserver.log",
+        __nccwpck_require__.ab + "additional.yaml",
+        __nccwpck_require__.ab + "out.log",
+        __nccwpck_require__.ab + "err.log"
       ];
         
-      const rootDirectory = `${cwd}/synapse`;
+      const rootDirectory = __nccwpck_require__.ab + "synapse";
       const options = {
         continueOnError: true
       }
-      const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
+      const uploadResult = await artifactClient.uploadArtifact(artifactName, files, __nccwpck_require__.ab + "synapse", options);
     }
   } catch (error) {
     core.setFailed(error.message);
