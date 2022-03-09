@@ -9456,12 +9456,17 @@ async function run() {
     var pid = core.getState("synapse-pid");
     var cwd = core.getState("synapse-dir");
     // Polite termination is for those without pull requests to merge.
-    process.kill(pid, 15);
-    await sleep(10000);
     try {
-      process.kill(pid, 9);
+      process.kill(pid, 15);
+      await sleep(10000);
+      try {
+        process.kill(pid, 9);
+        core.warn("Synapse did not shutdown in 10s. Terminating");
+      } catch(e) {
+        // expected that synapse PID is not available to be terminated here.
+      }
     } catch(e) {
-      // yeah, whatever
+      core.error("Synapse was no-longer running at teardown time")
     }
 
     // Tidy up the synapse directory to contain only log files
