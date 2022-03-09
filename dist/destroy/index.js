@@ -2822,6 +2822,14 @@ exports.debug = debug; // for test
 
 /***/ }),
 
+/***/ 346:
+/***/ ((module) => {
+
+module.exports = eval("require")("@actions/artifact");
+
+
+/***/ }),
+
 /***/ 357:
 /***/ ((module) => {
 
@@ -2978,6 +2986,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(186);
 const exec = __nccwpck_require__(514);
 const process = __nccwpck_require__(765);
+const artifact = __nccwpck_require__(346);
 
 // most @actions toolkit packages have async methods
 async function run() {
@@ -2990,9 +2999,25 @@ async function run() {
 
     // Tidy up the synapse directory to contain only log files
     // (useful for an artifact upload)
-    await exec.exec("rm", ["-r", "synapse/homeserver.db", "synapse/media_store", "synapse/env"]);
-    core.info(`... synapse folder prepared for artifact upload.`);
-
+    const upload = core.getBooleanInput('uploadLogs', {required: true});
+    if (upload) {
+      const artifactName = core.getInput('artifactName');
+      const artifactClient = artifact.create();
+      const cwd = process.cwd();
+      const files = [
+        `{cwd}/synapse/homeserver.yaml`,
+        `{cwd}/synapse/homeserver.log`,
+        `{cwd}/synapse/additional.yaml`,
+        `{cwd}/synapse/out.log`,
+        `{cwd}/synapse/err.log`
+      ];
+        
+      const rootDirectory = `{cwd}/synapse`;
+      const options = {
+        continueOnError: true
+      }
+      const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
+    }
   } catch (error) {
     core.setFailed(error.message);
   }

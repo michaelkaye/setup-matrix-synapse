@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const process = require('process');
+const artifact = require('@actions/artifact');
 
 // most @actions toolkit packages have async methods
 async function run() {
@@ -13,9 +14,25 @@ async function run() {
 
     // Tidy up the synapse directory to contain only log files
     // (useful for an artifact upload)
-    await exec.exec("rm", ["-r", "synapse/homeserver.db", "synapse/media_store", "synapse/env"]);
-    core.info(`... synapse folder prepared for artifact upload.`);
-
+    const upload = core.getBooleanInput('uploadLogs', {required: true});
+    if (upload) {
+      const artifactName = core.getInput('artifactName');
+      const artifactClient = artifact.create();
+      const cwd = process.cwd();
+      const files = [
+        `{cwd}/synapse/homeserver.yaml`,
+        `{cwd}/synapse/homeserver.log`,
+        `{cwd}/synapse/additional.yaml`,
+        `{cwd}/synapse/out.log`,
+        `{cwd}/synapse/err.log`
+      ];
+        
+      const rootDirectory = `{cwd}/synapse`;
+      const options = {
+        continueOnError: true
+      }
+      const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
+    }
   } catch (error) {
     core.setFailed(error.message);
   }

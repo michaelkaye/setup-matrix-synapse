@@ -1,13 +1,15 @@
 name: 'Setup Synapse'
-description: 'Deploys a synapse test server and provides the homeserver URL'
+description: 'Deploys a synapse test server'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  uploadLogs:
+    description: 'Upload synapse logs at end'
     required: true
-    default: '1000'
-outputs:
-  homeserver: # output will be available to future steps
-    description: 'Homeserver URL for clients'
+    default: true
+  artifactName:
+    description: 'Override artifact name for logs'
+    required: false
+    default: 'synapse-logs'
+
 runs:
   using: 'node16'
   main: 'dist/create/index.js'
