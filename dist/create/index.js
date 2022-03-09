@@ -3013,12 +3013,12 @@ async function run() {
     const port = core.getInput("httpPort");
     // Additional is our customizations to the base homeserver config
 
-    const additional = {
+    var additional = {
        public_baseurl: `http://localhost:${port}/`,
        enable_registration: true,
        listeners: [
          {
-           port: int(port),
+           port: parseInt(port),
            tls: false,
            bind_addresses: ['0.0.0.0'],
            type: 'http',
@@ -3034,7 +3034,7 @@ async function run() {
 
     const disableRateLimiting = core.getInput("disableRateLimiting");
     if (disableRateLimiting) {
-       rateLimiting = {
+       const rateLimiting = {
          rc_message: {
            per_second: 1000,
            burst_count: 1000
