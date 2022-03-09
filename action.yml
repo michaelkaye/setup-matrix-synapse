@@ -9,7 +9,14 @@ inputs:
     description: 'Override artifact name for logs'
     required: false
     default: 'synapse-logs'
-
+  customConfig:
+    description: 'JSON-formatted custom config for synapse'
+    required: false
+    default: '{}'
+  httpPort:
+    description: 'HTTP port for C-S and S-S APIs'
+    required: false
+    default: 8080
 runs:
   using: 'node16'
   main: 'dist/create/index.js'

@@ -2987,7 +2987,7 @@ async function run() {
   try {
 
     core.info(`Installing synapse...`);
-    
+
     // Lots of stuff here, from the setting up synapse page.
     await exec.exec("mkdir", ["-p", "synapse"]);
     process.chdir("synapse");
@@ -2995,7 +2995,10 @@ async function run() {
     await exec.exec("env/bin/pip", ["install", "-q", "--upgrade", "pip"]);
     await exec.exec("env/bin/pip", ["install", "-q", "--upgrade", "setuptools"]);
     await exec.exec("env/bin/pip", ["install", "-q", "matrix-synapse"]);
-    
+
+
+    // homeserver.yaml is the default server config from synapse
+
     core.info("Generating config...");
 
     await exec.exec("env/bin/python3", [
@@ -3006,17 +3009,98 @@ async function run() {
       "--report-stats=no"
     ]);
 
-    const additional = {};
 
+    const port = core.getInput("httpPort");
+    // Additional is our customizations to the base homeserver config
 
+    const additional = {
+       public_baseurl: `http://localhost:${port}/`,
+       enable_registration: true,
+       listeners: [
+         {
+           port: port,
+           tls: false,
+           bind_addresses: ['0.0.0.0'],
+           type: 'http',
+           resources: [
+             {
+               names: [ 'client', 'federation'],
+               compress: false
+             }
+           ]
+         }
+       ]
+    };
+
+    const disableRateLimiting = core.getInput("disableRateLimiting");
+    if (disableRateLimiting) {
+       rateLimiting = {
+         rc_message: {
+           per_second: 1000,
+           burst_count: 1000
+         },
+         rc_registration: {
+           per_second: 1000,
+           burst_count: 1000
+         },
+         rc_login: {
+           address: {
+             per_second: 1000,
+             burst_count: 1000
+           },
+           account: {
+             per_second: 1000,
+             burst_count: 1000
+           },
+           failed_attempts: {
+             per_second: 1000,
+             burst_count: 1000
+           }
+         },
+         rc_admin_redaction: {
+           per_second: 1000,
+           burst_count: 1000
+         },
+         rc_joins: {
+           local: {
+             per_second: 1000,
+             burst_count: 1000
+           },
+           remote: {
+             per_second: 1000,
+             burst_count: 1000
+           }
+         },
+         rc_3pid_validation: {
+           per_second: 1000,
+           burst_count: 1000
+         },
+         rc_invites: {
+           per_room: {
+             per_second: 1000,
+             burst_count: 1000
+           },
+           per_user: {
+             per_second: 1000,
+             burst_count: 1000
+           }
+         }
+       };
+       additional = { ...additional, ...rateLimiting };
+    }
     await fs.writeFile("additional.yaml", JSON.stringify(additional), 'utf8', (err) => { if (err != null) { core.info(err) }});
+
+    // And finally, customConfig is the user-supplied custom config, if required
+
+    const customConfig = core.getInput("customConfig");
+    await fs.writeFile("custom.yaml", customConfig, 'utf8', (err) => { if (err != null) { core.info(err) }});
 
     // Add listeners
     // Disable ratelimiting
     // etc
 
     // Ensure all files we pick up as logs afterwards are at least on disk
-    await exec.exec("touch", ["out.log", "err.log", "homeserver.log", "homeserver.yaml", "additional.yaml"]);
+    await exec.exec("touch", ["out.log", "err.log", "homeserver.log", "homeserver.yaml", "additional.yaml","custom.yaml"]);
 
     core.info(`Starting synapse ...`);
     const out = fs.openSync('out.log', 'a');
@@ -3028,19 +3112,20 @@ async function run() {
     var child = spawn("env/bin/python3", [
       "-m", "synapse.app.homeserver",
       "--config-path", "homeserver.yaml",
-      "--config-path", "additional.yaml"
+      "--config-path", "additional.yaml",
+      "--config-path", "custom.yaml"
     ], options);
- 
+
     core.saveState("synapse-pid", child.pid);
     core.info(`Waiting until C-S api is available`);
 
-    
+
     const url = 'http://localhost:8008/_matrix/client/versions';
     var retry = 0;
     while (true) {
-      core.info("Checking endpoint..."); 
+      core.info("Checking endpoint...");
       const response = await checkFor200(url);
-      core.info(`.. got ${response}`); 
+      core.info(`.. got ${response}`);
       if (response == 200 ) {
          break;
       }
@@ -3067,12 +3152,12 @@ async function run() {
 
 async function checkFor200(target) {
   return new Promise((resolve, reject) => {
-      
+ 
     const req = http.get(target, (res) => {
        resolve(res.statusCode);
     }).on('error', (e) => {
        resolve(0);
-    });; 
+    });;
     req.end();
   });
 }
