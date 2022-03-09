@@ -9456,8 +9456,13 @@ async function run() {
     var pid = core.getState("synapse-pid");
     var cwd = core.getState("synapse-dir");
     // Polite termination is for those without pull requests to merge.
-    process.kill(pid, 9);
-    core.info(`... process killed ...`);
+    process.kill(pid, 15);
+    await sleep(10000);
+    try {
+      process.kill(pid, 9);
+    } catch(e) {
+      // yeah, whatever
+    }
 
     // Tidy up the synapse directory to contain only log files
     // (useful for an artifact upload)
@@ -9483,6 +9488,13 @@ async function run() {
     core.setFailed(error.message);
   }
 }
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 
 run();
 
