@@ -3058,7 +3058,7 @@ async function run() {
     child.unref();
 
     // Action directory is not in the root; provide an output with the synapse folder we're using
-    core.setOutput("synapse-logs", process.cwd());
+    core.saveState("synapse-dir", process.cwd());
     core.setOutput("synapse-url", "http://localhost:8008/");
   } catch (error) {
     core.setFailed(error.message);

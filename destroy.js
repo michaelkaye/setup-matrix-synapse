@@ -8,6 +8,7 @@ async function run() {
   try {
     core.info(`Destroying synapse ...`);
     var pid = core.getState("synapse-pid");
+    var cwd = core.getState("synapse-dir");
     // Polite termination is for those without pull requests to merge.
     process.kill(pid, 9);
     core.info(`... process killed ...`);
@@ -18,7 +19,6 @@ async function run() {
     if (upload) {
       const artifactName = core.getInput('artifactName');
       const artifactClient = artifact.create();
-      const cwd = process.cwd();
       const files = [
         `${cwd}/synapse/homeserver.yaml`,
         `${cwd}/synapse/homeserver.log`,

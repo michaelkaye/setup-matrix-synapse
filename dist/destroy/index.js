@@ -9454,6 +9454,7 @@ async function run() {
   try {
     core.info(`Destroying synapse ...`);
     var pid = core.getState("synapse-pid");
+    var cwd = core.getState("synapse-dir");
     // Polite termination is for those without pull requests to merge.
     process.kill(pid, 9);
     core.info(`... process killed ...`);
@@ -9464,20 +9465,19 @@ async function run() {
     if (upload) {
       const artifactName = core.getInput('artifactName');
       const artifactClient = artifact.create();
-      const cwd = process.cwd();
       const files = [
-        __nccwpck_require__.ab + "homeserver.yaml",
-        __nccwpck_require__.ab + "homeserver.log",
-        __nccwpck_require__.ab + "additional.yaml",
-        __nccwpck_require__.ab + "out.log",
-        __nccwpck_require__.ab + "err.log"
+        `${cwd}/synapse/homeserver.yaml`,
+        `${cwd}/synapse/homeserver.log`,
+        `${cwd}/synapse/additional.yaml`,
+        `${cwd}/synapse/out.log`,
+        `${cwd}/synapse/err.log`
       ];
         
-      const rootDirectory = __nccwpck_require__.ab + "synapse";
+      const rootDirectory = `${cwd}/synapse`;
       const options = {
         continueOnError: true
       }
-      const uploadResult = await artifactClient.uploadArtifact(artifactName, files, __nccwpck_require__.ab + "synapse", options);
+      const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
     }
   } catch (error) {
     core.setFailed(error.message);
