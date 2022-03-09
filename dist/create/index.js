@@ -3100,7 +3100,14 @@ async function run() {
     // etc
 
     // Ensure all files we pick up as logs afterwards are at least on disk
-    await exec.exec("touch", ["out.log", "err.log", "homeserver.log", "homeserver.yaml", "additional.yaml","custom.yaml"]);
+    await exec.exec("touch", [
+      "out.log",
+      "err.log",
+      "homeserver.log",
+      "homeserver.yaml",
+      "additional.yaml",
+      "custom.yaml"
+    ]);
 
     core.info(`Starting synapse ...`);
     const out = fs.openSync('out.log', 'a');
@@ -3120,7 +3127,7 @@ async function run() {
     core.info(`Waiting until C-S api is available`);
 
 
-    const url = 'http://localhost:8008/_matrix/client/versions';
+    const url = `http://localhost:${port}/_matrix/client/versions`;
     var retry = 0;
     while (true) {
       core.info("Checking endpoint...");
@@ -3144,7 +3151,7 @@ async function run() {
 
     // Action directory is not in the root; provide an output with the synapse folder we're using
     core.saveState("synapse-dir", process.cwd());
-    core.setOutput("synapse-url", "http://localhost:8008/");
+    core.setOutput("synapse-url", `http://localhost:${port}/`);
   } catch (error) {
     core.setFailed(error.message);
   }
