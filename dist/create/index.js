@@ -2991,9 +2991,9 @@ async function run() {
     await exec.exec("mkdir", ["-p", "synapse"]);
     process.chdir("synapse");
     await exec.exec("python", ["-m", "venv", "env"]);
-    await exec.exec("env/bin/pip", ["install", "--upgrade", "pip"]);
-    await exec.exec("env/bin/pip", ["install", "--upgrade", "setuptools"]);
-    await exec.exec("env/bin/pip", ["install", "matrix-synapse"]);
+    await exec.exec("env/bin/pip", ["install", "-q", "--upgrade", "pip"]);
+    await exec.exec("env/bin/pip", ["install", "-q", "--upgrade", "setuptools"]);
+    await exec.exec("env/bin/pip", ["install", "-q", "matrix-synapse"]);
     
     core.info("Generating config...");
 
@@ -3014,10 +3014,10 @@ async function run() {
     // Disable ratelimiting
     // etc
 
+    // Ensure all files we pick up as logs afterwards are at least on disk
+    await exec.exec("touch", ["out.log", "err.log", "homeserver.log", "homeserver.yaml", "additional.yaml"]);
+
     core.info(`Starting synapse ...`);
-    // avoid exec.exec as we want to run in background
-    await exec.exec("touch", ["out.log"]);
-    await exec.exec("touch", ["err.log"]);
     const out = fs.openSync('out.log', 'a');
     const err = fs.openSync('err.log', 'a');
     const options = {
