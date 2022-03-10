@@ -17,6 +17,10 @@ inputs:
     description: 'HTTP port for C-S and S-S APIs'
     required: false
     default: 8080
+  ratelimit:
+    description: 'Ratelimit server requests'
+    required: false
+    default: true
 runs:
   using: 'node16'
   main: 'dist/create/index.js'
