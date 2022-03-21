@@ -37,7 +37,7 @@ jobs:
         customModules: "git+https://github.com/michaelkaye/noop-synapse-storage-provider.git#egg=noop-synapse-storage-provider"
         customConfig: | 
           media_storage_providers:
-            - module: noop_storage_provider
+            - module: noop_storage_provider.NoopStorageBackend
               store_local: True
               store_remote: True
               store_synchronous: True
