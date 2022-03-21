@@ -43,3 +43,5 @@ jobs:
               store_synchronous: True
               config:
                 sample: "sample"
+    - name: Wait for synapse to do something
+      run: sleep 60
