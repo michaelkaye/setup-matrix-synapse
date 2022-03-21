@@ -34,7 +34,7 @@ jobs:
       with: 
         uploadLogs: true
         httpPort: 8008
-        customModules: "https://github.com/michaelkaye/noop-synapse-storage-provider.git#egg=noop-synapse-storage-provider"
+        customModules: "git+https://github.com/michaelkaye/noop-synapse-storage-provider.git#egg=noop-synapse-storage-provider"
         customConfig: | 
           media_storage_providers:
             - module: noop_storage_provider.NoopStorageProviderBackend
