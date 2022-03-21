@@ -18,11 +18,13 @@ async function run() {
     await exec.exec("env/bin/pip", ["install", "-q", "--upgrade", "pip"]);
     await exec.exec("env/bin/pip", ["install", "-q", "--upgrade", "setuptools"]);
     await exec.exec("env/bin/pip", ["install", "-q", "matrix-synapse"]);
-    const customModules = core.getInput("customModules");
-    for (let module of customModules) {
-        await exec.exec("env/bin/pip", ["install", "-q", module]);
-    }
-
+    const customModules = core.getInput("customModules")
+    if (customModules.length > 0) {
+        const toLoad = customModules.split(',');
+        for (let module of toLoad) {
+            await exec.exec("env/bin/pip", ["install", "-q", module]);
+        }
+    } 
     // homeserver.yaml is the default server config from synapse
 
     core.info("Generating config...");
