@@ -21,4 +21,27 @@ jobs:
       with: 
         uploadLogs: true
         httpPort: 8008
-        
+  
+  test-modules:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: "3.x"
+    - name: Run synapse
+      uses: ./
+      with: 
+        uploadLogs: true
+        httpPort: 8008
+        customModules: "git+https://github.com/michaelkaye/noop-synapse-storage-provider.git#egg=noop-synapse-storage-provider"
+        customConfig: | 
+          media_storage_providers:
+            - module: noop_storage_provider.NoopStorageProviderBackend
+              store_local: True
+              store_remote: True
+              store_synchronous: True
+              config:
+                sample: "sample"
+    - name: Wait for synapse to do something
+      run: sleep 60

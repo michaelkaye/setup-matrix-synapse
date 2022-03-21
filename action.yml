@@ -13,6 +13,10 @@ inputs:
     description: 'JSON-formatted custom config for synapse'
     required: false
     default: '{}'
+  customModules:
+    description: 'Comma-separated list of modules to pip install.'
+    required: false
+    default: ''
   httpPort:
     description: 'HTTP port for C-S and S-S APIs'
     required: false
