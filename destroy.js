@@ -32,6 +32,7 @@ async function run() {
       const files = [
         `${cwd}/homeserver.yaml`,
         `${cwd}/homeserver.log`,
+        `${cwd}/custom.yaml`,
         `${cwd}/additional.yaml`,
         `${cwd}/out.log`,
         `${cwd}/err.log`
