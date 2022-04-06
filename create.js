@@ -44,6 +44,7 @@ async function run() {
     var additional = {
        public_baseurl: `http://localhost:${port}/`,
        enable_registration: true,
+       enable_registration_without_verification: true,
        listeners: [
          {
            port: parseInt(port),
