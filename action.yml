@@ -22,7 +22,7 @@ inputs:
     required: false
     default: 8080
   disableRateLimiting:
-    description: 'Ratelimit server requests'
+    description: 'Disable ratelimiting of server requests'
     required: false
     default: true
 runs:
