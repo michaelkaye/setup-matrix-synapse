@@ -21,7 +21,7 @@ inputs:
     description: 'HTTP port for C-S and S-S APIs'
     required: false
     default: 8080
-  ratelimit:
+  disableRateLimiting:
     description: 'Ratelimit server requests'
     required: false
     default: true
