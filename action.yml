@@ -17,6 +17,9 @@ inputs:
     description: 'Comma-separated list of modules to pip install.'
     required: false
     default: ''
+  public_baseurl:
+    description: 'Public base URL (defaults to http://localhost:${httpPort} if not defined)'
+    required: false
   httpPort:
     description: 'HTTP port for C-S and S-S APIs'
     required: false

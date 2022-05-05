@@ -3307,10 +3307,15 @@ async function run() {
 
 
     const port = core.getInput("httpPort");
-    // Additional is our customizations to the base homeserver config
+    var public_baseurl = core.getInput("public_baseurl");
+    if (public_baseurl == "") {
+       public_baseurl = `http://localhost:${port}`
+    }
 
+
+    // Additional is our customizations to the base homeserver config
     var additional = {
-       public_baseurl: `http://localhost:${port}/`,
+       public_baseurl: public_baseurl,
        enable_registration: true,
        enable_registration_without_verification: true,
        listeners: [
@@ -3424,7 +3429,7 @@ async function run() {
     core.info(`Waiting until C-S api is available`);
 
 
-    const url = `http://localhost:${port}/_matrix/client/versions`;
+    const url = `http://localhost:${ port }/_matrix/client/versions`;
     var retry = 0;
     while (true) {
       core.info("Checking endpoint...");
@@ -3448,17 +3453,22 @@ async function run() {
 
     // Action directory is not in the root; provide an output with the synapse folder we're using
     core.saveState("synapse-dir", process.cwd());
-    core.setOutput("synapse-url", `http://localhost:${port}/`);
+    core.setOutput("synapse-url", `http://localhost:${ port }/`);
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
+// Short timeout because we have a larger retry loop around it
+// And the server should respond within ~500ms or is generally unhappy anyway
 async function checkFor200(target) {
   return new Promise((resolve, reject) => {
  
-    const req = http.get(target, (res) => {
+    const req = http.get(target, {timeout: 500}, (res) => {
        resolve(res.statusCode);
+    }).on('timeout', (e) => {
+       req.abort();
+       resolve(0);
     }).on('error', (e) => {
        resolve(0);
     });;
