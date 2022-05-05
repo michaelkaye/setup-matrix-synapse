@@ -191,11 +191,16 @@ async function run() {
   }
 }
 
+// Short timeout because we have a larger retry loop around it
+// And the server should respond within ~500ms or is generally unhappy anyway
 async function checkFor200(target) {
   return new Promise((resolve, reject) => {
  
-    const req = http.get(target, (res) => {
+    const req = http.get(target, {timeout: 500}, (res) => {
        resolve(res.statusCode);
+    }).on('timeout', (e) => {
+       req.abort();
+       resolve(0);
     }).on('error', (e) => {
        resolve(0);
     });;
