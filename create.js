@@ -39,10 +39,15 @@ async function run() {
 
 
     const port = core.getInput("httpPort");
-    // Additional is our customizations to the base homeserver config
+    var public_baseurl = core.getInput("public_baseurl");
+    if (public_baseurl == "") {
+       public_baseurl = `http://localhost:${port}`
+    }
 
+
+    // Additional is our customizations to the base homeserver config
     var additional = {
-       public_baseurl: `http://localhost:${port}/`,
+       public_baseurl: public_baseurl,
        enable_registration: true,
        enable_registration_without_verification: true,
        listeners: [
@@ -156,7 +161,7 @@ async function run() {
     core.info(`Waiting until C-S api is available`);
 
 
-    const url = `http://localhost:${port}/_matrix/client/versions`;
+    const url = `${ public_baseurl }_matrix/client/versions`;
     var retry = 0;
     while (true) {
       core.info("Checking endpoint...");
@@ -180,7 +185,7 @@ async function run() {
 
     // Action directory is not in the root; provide an output with the synapse folder we're using
     core.saveState("synapse-dir", process.cwd());
-    core.setOutput("synapse-url", `http://localhost:${port}/`);
+    core.setOutput("synapse-url", `${public_baseurl}`);
   } catch (error) {
     core.setFailed(error.message);
   }
