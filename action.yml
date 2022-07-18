@@ -13,6 +13,9 @@ inputs:
     description: 'JSON-formatted custom config for synapse'
     required: false
     default: '{}'
+  serverName:
+    description: 'The name of the homeserver (or "localhost")'
+    required: false
   customModules:
     description: 'Comma-separated list of modules to pip install.'
     required: false
