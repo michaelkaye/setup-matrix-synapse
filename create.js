@@ -29,9 +29,14 @@ async function run() {
 
     core.info("Generating config...");
 
+    var server_name = core.getInput("serverName");
+    if (server_name == "") {
+       server_name = "localhost"
+    }
+
     await exec.exec("env/bin/python3", [
       "-m", "synapse.app.homeserver",
-      "--server-name", "localhost",
+      "--server-name", server_name,
       "--config-path", "homeserver.yaml",
       "--generate-config",
       "--report-stats=no"
