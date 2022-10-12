@@ -4128,33 +4128,63 @@ async function run() {
   try {
 
     core.info(`Installing synapse...`);
+    let installer = core.getInput("installer");
+    if (installer == "")
+        installer = "pip"
+    
 
-    // Lots of stuff here, from the setting up synapse page.
-    await exec.exec("mkdir", ["-p", "synapse"]);
-    process.chdir("synapse");
-    await exec.exec("python", ["-m", "venv", "env"]);
-    await exec.exec("env/bin/pip", ["install", "-q", "--upgrade", "pip"]);
-    await exec.exec("env/bin/pip", ["install", "-q", "--upgrade", "setuptools"]);
-    await exec.exec("env/bin/pip", ["install", "-q", "matrix-synapse"]);
+    if (installer == "poetry") {
+        // poetry requires a git checkout first
+        await exec.exec("git", ["clone", "https://github.com/matrix-org/synapse"]);
+        process.chdir("synapse");
+        await exec.exec("python", ["-m", "pip", "install","pipx"]);
+        await exec.exec("python", ["-m", "pipx", "ensurepath"]);
+        await exec.exec("pipx", ["install", "poetry"]);
+        await exec.exec("poetry", ["install", "--extras", "all"]);
+    } 
+    else {
+        // installing from pypi does not need the checkout.
+        // Lots of stuff here, from the setting up synapse page.
+        await exec.exec("mkdir", ["-p", "synapse"]);
+        process.chdir("synapse");
+        await exec.exec("python", ["-m", "venv", "env"]);
+        await exec.exec("env/bin/pip", ["install", "-q", "--upgrade", "pip"]);
+        await exec.exec("env/bin/pip", ["install", "-q", "--upgrade", "setuptools"]);
+        await exec.exec("env/bin/pip", ["install", "-q", "matrix-synapse"]);
+    }  
     const customModules = core.getInput("customModules")
     if (customModules.length > 0) {
         const toLoad = customModules.split(',');
         for (let module of toLoad) {
-            await exec.exec("env/bin/pip", ["install", "-q", module]);
+            if (installer == "poetry") {
+                await exec.exec("poetry", ["install", module]);
+            } else {
+                await exec.exec("env/bin/pip", ["install", "-q", module]);
+            }
         }
-    } 
+    }
     // homeserver.yaml is the default server config from synapse
 
     core.info("Generating config...");
+    if (installer == "poetry") {
+        await exec.exec("poetry", [
+          "run", "python",
+          "-m", "synapse.app.homeserver",
+          "--server-name", "localhost",
+          "--config-path", "homeserver.yaml",
+          "--generate-config",
+          "--report-stats=no"
+        ]);
 
-    await exec.exec("env/bin/python3", [
-      "-m", "synapse.app.homeserver",
-      "--server-name", "localhost",
-      "--config-path", "homeserver.yaml",
-      "--generate-config",
-      "--report-stats=no"
-    ]);
-
+    } else {
+        await exec.exec("env/bin/python3", [
+          "-m", "synapse.app.homeserver",
+          "--server-name", "localhost",
+          "--config-path", "homeserver.yaml",
+          "--generate-config",
+          "--report-stats=no"
+        ]);
+    }
 
     const port = core.getInput("httpPort");
     var public_baseurl = core.getInput("public_baseurl");
@@ -4268,20 +4298,29 @@ async function run() {
       detached: true,
       stdio: [ 'ignore', out, err ]
     }
-    var child = spawn("env/bin/python3", [
-      "-m", "synapse.app.homeserver",
-      "--config-path", "homeserver.yaml",
-      "--config-path", "additional.yaml",
-      "--config-path", "custom.yaml"
-    ], options);
-
+    if (installer == "poetry" ) {
+        var child = spawn("poetry", [
+          "run", "python", 
+          "-m", "synapse.app.homeserver",
+          "--config-path", "homeserver.yaml",
+          "--config-path", "additional.yaml",
+          "--config-path", "custom.yaml"
+        ], options);
+    } else {
+        var child = spawn("env/bin/python3", [
+          "-m", "synapse.app.homeserver",
+          "--config-path", "homeserver.yaml",
+          "--config-path", "additional.yaml",
+          "--config-path", "custom.yaml"
+        ], options);
+    }
     core.saveState("synapse-pid", child.pid);
     core.info(`Waiting until C-S api is available`);
 
 
     const url = `http://localhost:${ port }/_matrix/client/versions`;
     var retry = 0;
-    while (true) {
+    while (retry < 20) {
       core.info("Checking endpoint...");
       const response = await checkFor200(url);
       core.info(`.. got ${response}`);
@@ -4312,16 +4351,16 @@ async function run() {
 // Short timeout because we have a larger retry loop around it
 // And the server should respond within ~500ms or is generally unhappy anyway
 async function checkFor200(target) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
  
     const req = http.get(target, {timeout: 500}, (res) => {
        resolve(res.statusCode);
-    }).on('timeout', (e) => {
+    }).on('timeout', () => {
        req.abort();
        resolve(0);
-    }).on('error', (e) => {
+    }).on('error', () => {
        resolve(0);
-    });;
+    });
     req.end();
   });
 }

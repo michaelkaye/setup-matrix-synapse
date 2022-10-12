@@ -22,6 +22,20 @@ jobs:
         uploadLogs: true
         httpPort: 8008
   
+  test-poetry:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+    - name: Run synapse
+      uses: ./
+      with: 
+        uploadLogs: true
+        httpPort: 8008
+        installer: "poetry"
+  
   test-baseurl:
     runs-on: ubuntu-latest
     steps:

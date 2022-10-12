@@ -1,6 +1,9 @@
 name: 'Setup Synapse'
 description: 'Deploys a synapse test server'
 inputs:
+  installer:
+    description: 'Install method (options "poetry", "venv" [default])'
+    default: 'venv'
   uploadLogs:
     description: 'Upload synapse logs at end'
     required: true
