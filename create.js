@@ -39,7 +39,7 @@ async function run() {
         const toLoad = customModules.split(',');
         for (let module of toLoad) {
             if (installer == "poetry") {
-                await exec.exec("poetry", ["install", module]);
+                await exec.exec("poetry", ["add", module]);
             } else {
                 await exec.exec("env/bin/pip", ["install", "-q", module]);
             }

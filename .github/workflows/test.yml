@@ -50,6 +50,31 @@ jobs:
         httpPort: 8008
         public_baseurl: http://10.0.2.2:8008/
   
+  test-modules-poetry:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+    - name: Run synapse
+      uses: ./
+      with: 
+        installer: poetry
+        uploadLogs: true
+        httpPort: 8008
+        customModules: "git+https://github.com/michaelkaye/noop-synapse-storage-provider.git"
+        customConfig: | 
+          media_storage_providers:
+            - module: noop_storage_provider.NoopStorageProviderBackend
+              store_local: True
+              store_remote: True
+              store_synchronous: True
+              config:
+                sample: "sample"
+    - name: Wait for synapse to do something
+      run: sleep 60
+
   test-modules:
     runs-on: ubuntu-latest
     steps:
