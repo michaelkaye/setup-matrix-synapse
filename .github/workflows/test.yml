@@ -63,7 +63,7 @@ jobs:
         installer: poetry
         uploadLogs: true
         httpPort: 8008
-        customModules: "https://github.com/michaelkaye/noop-synapse-storage-provider.git"
+        customModules: "git+https://github.com/michaelkaye/noop-synapse-storage-provider.git"
         customConfig: | 
           media_storage_providers:
             - module: noop_storage_provider.NoopStorageProviderBackend
