@@ -1,5 +1,4 @@
 const core = require('@actions/core');
-const exec = require('@actions/exec');
 const process = require('process');
 const artifact = require('@actions/artifact');
 
@@ -42,7 +41,7 @@ async function run() {
       const options = {
         continueOnError: true
       }
-      const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
+      await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
     }
   } catch (error) {
     core.setFailed(error.message);
