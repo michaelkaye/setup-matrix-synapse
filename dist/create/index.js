@@ -3621,13 +3621,22 @@ async function run() {
       detached: true,
       stdio: [ 'ignore', out, err ]
     }
-    var child = spawn("env/bin/python3", [
-      "-m", "synapse.app.homeserver",
-      "--config-path", "homeserver.yaml",
-      "--config-path", "additional.yaml",
-      "--config-path", "custom.yaml"
-    ], options);
-
+    if (installer == "poetry" ) {
+        var child = spawn("poetry", [
+          "run", "python", 
+          "-m", "synapse.app.homeserver",
+          "--config-path", "homeserver.yaml",
+          "--config-path", "additional.yaml",
+          "--config-path", "custom.yaml"
+        ], options);
+    } else {
+        var child = spawn("env/bin/python3", [
+          "-m", "synapse.app.homeserver",
+          "--config-path", "homeserver.yaml",
+          "--config-path", "additional.yaml",
+          "--config-path", "custom.yaml"
+        ], options);
+    }
     core.saveState("synapse-pid", child.pid);
     core.info(`Waiting until C-S api is available`);
 
