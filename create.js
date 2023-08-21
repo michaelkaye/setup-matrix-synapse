@@ -21,8 +21,8 @@ async function run() {
         process.chdir("synapse");
         await exec.exec("python", ["-m", "pip", "install","pipx"]);
         await exec.exec("python", ["-m", "pipx", "ensurepath"]);
-        await exec.exec("pipx", ["install", "poetry"]);
-        await exec.exec("poetry", ["install", "--extras", "all"]);
+        await exec.exec("pipx", ["install", "poetry==1.5.1"]);
+        await exec.exec("poetry", ["install", "-vv", "--extras", "all"]);
     } 
     else {
         // installing from pypi does not need the checkout.
