@@ -4131,7 +4131,6 @@ async function run() {
     let installer = core.getInput("installer");
     if (installer == "")
         installer = "pip"
-    
 
     if (installer == "poetry") {
         // poetry requires a git checkout first
@@ -4139,7 +4138,8 @@ async function run() {
         process.chdir("synapse");
         await exec.exec("python", ["-m", "pip", "install","pipx"]);
         await exec.exec("python", ["-m", "pipx", "ensurepath"]);
-        await exec.exec("pipx", ["install", "poetry==1.5.1"]);
+        await exec.exec("pipx", ["install", "poetry==1.7.1"]);
+        await exec.exec("pipx", ["list", "--verbose", "--include-injected"]);
         await exec.exec("poetry", ["install", "-vv", "--extras", "all"]);
     } 
     else {
@@ -4298,8 +4298,9 @@ async function run() {
       detached: true,
       stdio: [ 'ignore', out, err ]
     }
+    var child;
     if (installer == "poetry" ) {
-        var child = spawn("poetry", [
+        child = spawn("poetry", [
           "run", "python", 
           "-m", "synapse.app.homeserver",
           "--config-path", "homeserver.yaml",
@@ -4307,7 +4308,7 @@ async function run() {
           "--config-path", "custom.yaml"
         ], options);
     } else {
-        var child = spawn("env/bin/python3", [
+        child = spawn("env/bin/python3", [
           "-m", "synapse.app.homeserver",
           "--config-path", "homeserver.yaml",
           "--config-path", "additional.yaml",

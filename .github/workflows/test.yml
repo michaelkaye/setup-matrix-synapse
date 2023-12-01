@@ -2,7 +2,7 @@ name: "units-test"
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '0 0 * * *'
+    - cron:  '0 0 * * 1'
   pull_request:
   push:
     branches:
@@ -25,6 +25,21 @@ jobs:
         uploadLogs: true
         httpPort: 8008
   
+  test-poetry-branch:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ">=3.8"
+    - name: Run synapse
+      uses: ./
+      with: 
+        uploadLogs: true
+        httpPort: 8008
+        installer: "poetry"
+        version: "master"
+
   test-poetry:
     runs-on: ubuntu-latest
     steps:
