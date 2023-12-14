@@ -4134,7 +4134,7 @@ async function run() {
 
     if (installer == "poetry") {
         // poetry requires a git checkout first
-        await exec.exec("git", ["clone", "https://github.com/matrix-org/synapse"]);
+        await exec.exec("git", ["clone", "https://github.com/element-hq/synapse"]);
         process.chdir("synapse");
         await exec.exec("python", ["-m", "pip", "install","pipx"]);
         await exec.exec("python", ["-m", "pipx", "ensurepath"]);
