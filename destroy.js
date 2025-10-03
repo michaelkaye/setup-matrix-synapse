@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const process = require('process');
-const artifact = require('@actions/artifact');
+const {DefaultArtifactClient} = require('@actions/artifact');
 
 // most @actions toolkit packages have async methods
 async function run() {
@@ -26,8 +26,8 @@ async function run() {
     // (useful for an artifact upload)
     const upload = core.getBooleanInput('uploadLogs', {required: true});
     if (upload) {
+      const artifact = new DefaultArtifactClient();
       const artifactName = core.getInput('artifactName');
-      const artifactClient = artifact.create();
       const files = [
         `${cwd}/homeserver.yaml`,
         `${cwd}/homeserver.log`,
@@ -41,7 +41,7 @@ async function run() {
       const options = {
         continueOnError: true
       }
-      await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
+      await artifact.uploadArtifact(artifactName, files, rootDirectory, options);
     }
   } catch (error) {
     core.setFailed(error.message);

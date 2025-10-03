@@ -23,6 +23,7 @@ jobs:
       uses: ./
       with: 
         uploadLogs: true
+        artifactName: synapse-logs-${{ github.job }}
         httpPort: 8008
   
   test-poetry-branch:
@@ -36,6 +37,7 @@ jobs:
       uses: ./
       with: 
         uploadLogs: true
+        artifactName: synapse-logs-${{ github.job }}
         httpPort: 8008
         installer: "poetry"
         version: "master"
@@ -51,6 +53,7 @@ jobs:
       uses: ./
       with: 
         uploadLogs: true
+        artifactName: synapse-logs-${{ github.job }}
         httpPort: 8008
         installer: "poetry"
   
@@ -65,6 +68,7 @@ jobs:
       uses: ./
       with: 
         uploadLogs: true
+        artifactName: synapse-logs-${{ github.job }}
         httpPort: 8008
         public_baseurl: http://10.0.2.2:8008/
   
@@ -80,6 +84,7 @@ jobs:
       with: 
         installer: poetry
         uploadLogs: true
+        artifactName: synapse-logs-${{ github.job }}
         httpPort: 8008
         customModules: "git+https://github.com/michaelkaye/noop-synapse-storage-provider.git"
         customConfig: | 
@@ -104,6 +109,7 @@ jobs:
       uses: ./
       with: 
         uploadLogs: true
+        artifactName: synapse-logs-${{ github.job }}
         httpPort: 8008
         customModules: "git+https://github.com/michaelkaye/noop-synapse-storage-provider.git#egg=noop-synapse-storage-provider"
         customConfig: | 

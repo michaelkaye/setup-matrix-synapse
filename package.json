@@ -25,9 +25,9 @@
   },
   "homepage": "https://github.com/actions/javascript-action#readme",
   "dependencies": {
+    "@actions/artifact": "^2.3.2",
     "@actions/core": "^1.9.0",
-    "@actions/exec": "^1.0.4",
-    "@actions/artifact": "^1.1.0"
+    "@actions/exec": "^1.0.4"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.34.0",
